@@ -11,6 +11,7 @@ public class PagedList(
     public int TotalCount => totalCount;
     public string SortExpression => sortExpression;
     public bool HasPreviousPage => PageIndex > 1;
-    public bool HasNextPage => PageIndex < totalCount;
-    public int TotalPages => (int)Math.Ceiling(totalCount / (double)pageSize);
+    public bool HasNextPage => PageIndex < TotalPages;
+    //public int TotalPages => (int)Math.Ceiling(totalCount / (double)pageSize);
+    public int TotalPages => (totalCount + pageSize - 1) / pageSize;
 }

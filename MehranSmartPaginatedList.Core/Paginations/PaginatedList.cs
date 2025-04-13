@@ -1,4 +1,5 @@
 ﻿using MehranSmartPaginatedList.Core.Extensions;
+using MehranSmartPaginatedList.Core.Models;
 using MehranSmartPaginatedList.Core.Sort;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,16 +21,15 @@ public interface IPaginatedList<T>
         CancellationToken cancellationToken = default);
 }
 
-public class PaginatedList<T>(
-    List<T> items,
-    int totalCount,
-    int pageIndex,
-    int pageSize,
-    string sortExpressionSummary) : IPaginatedList<T>
+public class PaginatedList<T>(PaginationModel<T> model) : IPaginatedList<T>
 {
-    public List<T> Items { get; set; } = items;
+    public List<T> Items { get; set; } = model.Items;
     public IPagedList PaginationInfo { get; private set; } 
-        = new PagedList(totalCount, pageIndex, pageSize, sortExpressionSummary);
+        = new PagedList(
+            model.TotalCount,
+            model.PageIndex,
+            model.PageSize,
+            model.SortExpressionSummary);
 
     public async Task<PaginatedList<T>> CreateAsync(
     IQueryable<T> source,
@@ -38,20 +38,25 @@ public class PaginatedList<T>(
     IEnumerable<ISortOption> sortOptions,
     CancellationToken cancellationToken = default)
     {
-        int totalCount = await source.CountAsync(cancellationToken);
-
-        // اعمال سورت‌ها طبق اولویت
-        source = source.ApplySorting(sortOptions);
-
+        // لیست دیتا ها
         List<T> items = await source
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 
+        // جمع کل
+        int totalCount = await source.CountAsync(cancellationToken);
+
+        // اعمال سورت‌ها طبق اولویت
+        source = source.ApplySorting(sortOptions);
+
+        // مرتب سازی
         string sortExpressionSummary = string.Join(", ",
             sortOptions.Select(x => $"{x.PropertyName} {(x.Descending ? "desc" : "asc")}"));
 
-        return new PaginatedList<T>(items, totalCount, pageIndex, pageSize, sortExpressionSummary);
+        var model = new PaginationModel<T>(items, totalCount, pageIndex, pageSize, sortExpressionSummary);
+
+        return new PaginatedList<T>(model);
     }
 }
 

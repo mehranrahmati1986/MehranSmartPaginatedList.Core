@@ -5,7 +5,9 @@ namespace MehranSmartPaginatedList.Core.Extensions;
 
 public static class SortingExtensions
 {
-    public static IQueryable<T> ApplySorting<T>(this IQueryable<T> source, IEnumerable<ISortOption> sortOptions)
+    public static IQueryable<T> ApplySorting<T>(
+        this IQueryable<T> source,
+        IEnumerable<ISortOption> sortOptions)
     {
         bool first = true;
 

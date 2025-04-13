@@ -1,4 +1,5 @@
-﻿using MehranSmartPaginatedList.Core.Paginations;
+﻿using MehranSmartPaginatedList.Core.Models;
+using MehranSmartPaginatedList.Core.Paginations;
 using MehranSmartPaginatedList.Core.Sort;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +12,12 @@ public static class PaginationExtensions
         this IQueryable<T> source,
         int pageIndex,
         int pageSize,
-        IEnumerable<ISortOption>? sortOptions = null)
+        IEnumerable<ISortOption> sortOptions = null)
     {
         int totalCount = source.Count();
 
         // مرتب‌سازی گزینه‌ها بر اساس اولویت
-        List<ISortOption>? sortedOptions = sortOptions?.OrderBy(x => x.Priority).ToList();
+        List<ISortOption> sortedOptions = sortOptions?.OrderBy(x => x.Priority).ToList();
 
         // اعمال مرتب‌سازی در صورت وجود
         if (sortOptions != null && sortOptions.Any())
@@ -28,9 +29,12 @@ public static class PaginationExtensions
                          .Skip((pageIndex - 1) * pageSize)
                          .Take(pageSize)];
 
+        string sort = string.Join(", ", sortOptions?.Select(x => $"{x.PropertyName} {(x.Descending ? "desc" : "asc")}") ?? []);
+
+        PaginationModel<T> model = new(items, totalCount, pageIndex, pageSize, sort);
+
         // ایجاد و برگرداندن لیست صفحه‌بندی‌شده
-        return new PaginatedList<T>(items, totalCount, pageIndex, pageSize,
-            string.Join(", ", sortOptions?.Select(x => $"{x.PropertyName} {(x.Descending ? "desc" : "asc")}") ?? []));
+        return new PaginatedList<T>(model);
 
     }
 
@@ -39,7 +43,7 @@ public static class PaginationExtensions
         this IQueryable<T> source,
         int pageIndex,
         int pageSize,
-        IEnumerable<ISortOption>? sortOptions = null,
+        IEnumerable<ISortOption> sortOptions = null,
         CancellationToken cancellationToken = default)
     {
         int totalCount = await source.CountAsync(cancellationToken);
@@ -55,9 +59,11 @@ public static class PaginationExtensions
                               .Take(pageSize)
                               .ToListAsync(cancellationToken);
 
+        string sort = string.Join(", ", sortOptions?.Select(x => $"{x.PropertyName} {(x.Descending ? "desc" : "asc")}") ?? []);
+
+        PaginationModel<T> model = new(items, totalCount, pageIndex, pageSize, sort);
+
         // ایجاد و برگرداندن لیست صفحه‌بندی‌شده
-        return new PaginatedList<T>(items, totalCount, pageIndex, pageSize,
-            string.Join(", ", sortOptions?.Select(x => $"{x.PropertyName} {(x.Descending ? "desc" : "asc")}") ?? []));
-        ;
+        return new PaginatedList<T>(model);
     }
 }

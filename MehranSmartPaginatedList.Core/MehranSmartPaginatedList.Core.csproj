@@ -1,14 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <PackageId>MehranPagination.Core</PackageId>
     <Title>صفحه بندی بصورت ساده و کارآمد</Title>
+	<Version>1.0.0</Version>
     <Authors>مهران قائدرحمت</Authors>
     <Description>این پکیج به شما این امکان را می‌دهد که فرآیند صفحه‌بندی را به‌طور ساده و کارآمد در پروژه‌های دات‌نت خود پیاده‌سازی کنید. ابزارهایی را برای مدیریت لیست‌های صفحه‌بندی‌شده ارائه می‌دهد و به شما کمک می‌کند که داده‌های خود را به‌طور بهینه و با استفاده از قابلیت‌های مرتب‌سازی پیچیده و پیشرفته نمایش دهید.</Description>
-    <RepositoryUrl>xxxxxxx</RepositoryUrl>
+    <RepositoryUrl>https://github.com/mehranrahmati1986/MehranSmartPaginatedList.Core</RepositoryUrl>
+	<RepositoryType>GitHub</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
